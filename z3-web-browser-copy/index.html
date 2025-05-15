@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + Phaser App</title>
+    <script src="/z3-built.js"></script>
+    <script>
+      globalThis.global = { initZ3: globalThis.initZ3 };
+    </script>
+    <script type="module" src="/src/Scenes/Load.js"></script>
+    <script type="module" src="/src/Scenes/Pathfinder.js"></script>
+    <script type="module" src="/src/main.js"></script>
+    <script src="/lib/easystar-0.4.4.js"></script>
+  </head>
+  <body>
+    <div id="phaser-game"></div>
+    <!-- <script type="module" src="/main.js"></script> -->
+  </body>
+</html>
