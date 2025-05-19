@@ -99,19 +99,21 @@ export default class Pathfinder extends Phaser.Scene {
     this.lowCost = false;
   }
 
-  update() {
+update() {
     if (Phaser.Input.Keyboard.JustDown(this.cKey)) {
-      if (!this.lowCost) {
-        // Make the path low cost with respect to grassy areas
-        this.setCost(this.tileset);
-        this.lowCost = true;
-      } else {
-        // Restore everything to same cost
-        this.resetCost(this.tileset);
-        this.lowCost = false;
-      }
+        if (!this.lowCost) {
+            console.log("Setting low-cost path for grassy areas.");
+            // Make the path low cost with respect to grassy areas
+            this.setCost(this.tileset);
+            this.lowCost = true;
+        } else {
+            console.log("Restoring default cost for all tiles.");
+            // Restore everything to same cost
+            this.resetCost(this.tileset);
+            this.lowCost = false;
+        }
     }
-  }
+}
 
   resetCost(tileset) {
     for (let tileID = tileset.firstgid; tileID < tileset.total; tileID++) {
@@ -139,30 +141,28 @@ export default class Pathfinder extends Phaser.Scene {
   // This array can then be given to Easystar for use in path finding.
   layersToGrid() {
     let grid = [];
-    // Initialize grid as two-dimensional array
-    // TODO: write initialization code
 
-    // Loop over layers to find tile IDs, store in grid
-    // TODO: write this loop
-    for (let i = 0; i < this.TILEHEIGHT; i++) {
-      let row = [];
-      for (let j = 0; j < this.TILEWIDTH; j++) {
-        const tile = this.groundLayer.getTileAt(j, i);
-        const treesTile = this.treesLayer.getTileAt(x, y);
-        const housesTile = this.housesLayer.getTileAt(x, y);
-        if (treesTile || housesTile) {
-          row.push(-1); // Blocked tile
-        } else if (tile) {
-          row.push(tile.index); // Ground tile index
-        } else {
-          row.push(0); // Empty fallback
+    for (let y = 0; y < this.TILEHEIGHT; y++) {
+        let row = [];
+        for (let x = 0; x < this.TILEWIDTH; x++) {
+            const tile = this.groundLayer.getTileAt(x, y);
+            const treesTile = this.treesLayer.getTileAt(x, y);
+            const housesTile = this.housesLayer.getTileAt(x, y);
+
+            if (treesTile || housesTile) {
+                row.push(-1);  // Blocked
+            } else if (tile) {
+                row.push(tile.index);
+            } else {
+                row.push(0);  // Default fallback
+            }
         }
-      }
-      grid.push(row);
+        grid.push(row);
     }
 
     return grid;
-  }
+}
+
 
   handleClick(pointer) {
     let x = pointer.x / this.SCALE;
@@ -213,5 +213,14 @@ export default class Pathfinder extends Phaser.Scene {
   // setTileCost(tileID, tileCost) function.
   setCost(tileset) {
     // TODO: write this function
+    const firstGid = tileset.firstgid;
+    const tileCount = tileset.total;
+
+    for (let tileID = firstGid; tileID < tileCount; tileID++) {
+      const props = tileset.getTileProperties(tileID);
+      if (props && props.cost) {
+        this.finder.setTileCost(tileID, props.cost);
+      }
+    }
   }
 }
